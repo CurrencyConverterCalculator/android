@@ -53,7 +53,13 @@ tasks.register<Jar>("fatJar") {
         attributes["Implementation-Version"] = ProjectSettings.getVersionName(project)
         attributes["Main-Class"] = "${ProjectSettings.packageName}.backend.BackendAppKt"
     }
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    from(configurations.runtimeClasspath.get().map { file: File ->
+        if (file.isDirectory) {
+            file
+        } else {
+            zipTree(file)
+        }
+    })
     with(tasks.jar.get() as CopySpec)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
