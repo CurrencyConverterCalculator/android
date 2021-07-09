@@ -46,6 +46,18 @@ kotlin {
     }
 }
 
+tasks.register<Jar>("fatJar") {
+    archiveBaseName.set("${project.name}-fat")
+    manifest {
+        attributes["Implementation-Title"] = "Gradle Jar File Example"
+        attributes["Implementation-Version"] = ProjectSettings.getVersionName(project)
+        attributes["Main-Class"] = "${ProjectSettings.packageName}.backend.BackendAppKt"
+    }
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    with(tasks.jar.get() as CopySpec)
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
 @Suppress("UnstableApiUsage")
 tasks.named<ProcessResources>("jvmProcessResources") {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
