@@ -145,9 +145,6 @@ jobs:
       status: ${{ steps.status.outputs.status }}
     steps:
 
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: Download App Bundle
         uses: actions/download-artifact@v2
         with:
@@ -183,6 +180,14 @@ jobs:
         with:
           name: jar
           path: artifact
+
+      - name: Prepare SSH
+        run: |
+          cd ~ && mkdir .ssh &&
+          touch ~/.ssh/known_hosts &&
+          ssh-keyscan -H "$REMOTE_HOST" >>~/.ssh/known_hosts
+        env:
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
 
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
